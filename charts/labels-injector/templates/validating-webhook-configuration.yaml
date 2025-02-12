@@ -1,0 +1,29 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: {{ include "labels-injector.fullname" . }}-validating-webhook-configuration
+  annotations:
+    cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/{{ include "labels-injector.fullname" . }}-serving-cert
+  labels:
+  {{- include "labels-injector.labels" . | nindent 4 }}
+webhooks:
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: '{{ include "labels-injector.fullname" . }}-webhook-service'
+      namespace: '{{ .Release.Namespace }}'
+      path: /admission--v1-pods-binding
+  failurePolicy: Ignore
+  name: labels-injector.kvm.cloud.sap
+  rules:
+  - apiGroups:
+    - ""
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - pods/binding
+  sideEffects: None

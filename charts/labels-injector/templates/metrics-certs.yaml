@@ -1,0 +1,15 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "labels-injector.fullname" . }}-metrics-certs
+  labels:
+  {{- include "labels-injector.labels" . | nindent 4 }}
+spec:
+  dnsNames:
+  - '{{ include "labels-injector.fullname" . }}-SERVICE_NAME.SERVICE_NAMESPACE.svc'
+  - '{{ include "labels-injector.fullname" . }}-SERVICE_NAME.SERVICE_NAMESPACE.svc.{{
+    .Values.kubernetesClusterDomain }}'
+  issuerRef:
+    kind: Issuer
+    name: '{{ include "labels-injector.fullname" . }}-selfsigned-issuer'
+  secretName: metrics-server-cert
