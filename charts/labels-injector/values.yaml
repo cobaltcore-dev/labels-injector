@@ -12,7 +12,7 @@ controllerManager:
         - ALL
     image:
       repository: keppel.eu-de-1.cloud.sap/ccloud/cobaltcore-dev/labels-injector@sha256
-      tag: 7e7d51d09d3835c3bffcf72a3d976697304db8ba0dc0c636d7579fde6e170b3f
+      tag: f73da24a06523737f5a7e17d53706bbad2feb818b47d1fc30ea4c7b9fd24bab2
     resources:
       limits:
         cpu: 500m

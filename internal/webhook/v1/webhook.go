@@ -113,6 +113,10 @@ func (d *PodLabelTransferHandler) Handle(ctx context.Context, request admission.
 			pod.Labels[label] = nodeLabel
 		}
 	}
+	if _, ok := node.Labels["kubernetes.metal.cloud.sap/name"]; !ok {
+		// legacy cluster fallback strategy
+		pod.Labels["kubernetes.metal.cloud.sap/name"] = nodeName
+	}
 
 	// patch the pod object
 	if err := d.Patch(ctx, pod, patch); err != nil {
