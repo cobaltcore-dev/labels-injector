@@ -1,10 +1,11 @@
 module github.com/cobaltcore-dev/labels-injector
 
-go 1.23.0
+go 1.24
 
 godebug default=go1.23
 
 require (
+	github.com/sapcc/go-api-declarations v1.17.3
 	k8s.io/api v0.32.0
 	k8s.io/apimachinery v0.32.0
 	k8s.io/client-go v0.32.0

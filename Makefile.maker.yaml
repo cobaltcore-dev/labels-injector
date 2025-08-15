@@ -1,0 +1,56 @@
+# SPDX-FileCopyrightText: 2025 SAP SE or an SAP affiliate company
+# SPDX-License-Identifier: Apache-2.0
+
+metadata:
+  url: https://github.com/cobaltcore-dev/labels-injector
+
+binaries:
+  - name: manager
+    fromPackage: ./cmd
+    installTo: bin/
+
+golang:
+  autoupdateableDeps: ^github.com/(?:sapcc|sap-cloud-infrastructure)/
+  setGoModVersion: true
+
+golangciLint:
+  createConfig: true
+
+githubWorkflow:
+  ci:
+    enabled: true
+    coveralls: true
+  global:
+    defaultBranch: main
+
+renovate:
+  enabled: true
+
+reuse:
+  enabled: true
+  annotations:
+    - paths:
+        - config/**.yaml
+        - charts/**
+        - PROJECT
+        - README.md
+        - build/**
+      SPDX-FileCopyrightText: 'SAP SE or an SAP affiliate company'
+      SPDX-License-Identifier: Apache-2.0
+
+dockerfile:
+  enabled: true
+
+controllerGen:
+  enabled: true
+  crdOutputPath: config/crd/bases
+  objectHeaderFile: hack/boilerplate.go.txt
+  rbacRoleName: manager-role
+
+verbatim: |
+  install-helmify: FORCE
+    @if ! hash helmify 2>/dev/null; then printf "\e[1;36m>> Installing helmify (this may take a while)...\e[0m\n"; go install github.com/arttor/helmify/cmd/helmify@latest; fi
+
+  helm-charts: install-helmify
+    @printf "\e[1;36m>> helmify\e[0m\n"
+    @kubectl kustomize config/default | helmify -crd-dir charts/labels-injector
