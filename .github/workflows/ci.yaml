@@ -33,6 +33,8 @@ jobs:
         with:
           check-latest: true
           go-version: 1.24.6
+      - name: Run prepare make target
+        run: make generate
       - name: Build all binaries
         run: make build-all
   test:
@@ -48,12 +50,7 @@ jobs:
         with:
           check-latest: true
           go-version: 1.24.6
+      - name: Run prepare make target
+        run: make generate
       - name: Run tests and generate coverage report
         run: make build/cover.out
-      - name: Upload coverage report to Coveralls
-        env:
-          COVERALLS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GIT_BRANCH: ${{ github.head_ref }}
-        run: |
-          go install github.com/mattn/goveralls@latest
-          goveralls -service=github -coverprofile=build/cover.out

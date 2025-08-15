@@ -89,19 +89,11 @@ func (d *PodLabelTransferHandler) Handle(ctx context.Context, request admission.
 		return admission.Allowed("").WithWarnings("Failed to fetch node")
 	}
 
-	if node == nil {
-		return admission.Allowed("").WithWarnings("Node not found")
-	}
-
 	// fetch the pod object
 	pod := &v1.Pod{}
 	if err := d.Get(ctx, client.ObjectKeyFromObject(binding), pod); client.IgnoreNotFound(err) != nil {
 		log.Error(err, "failed to fetch pod", "object", client.ObjectKeyFromObject(binding))
 		return admission.Allowed("").WithWarnings("Failed to fetch pod")
-	}
-
-	if pod == nil {
-		return admission.Allowed("").WithWarnings("Pod not found")
 	}
 
 	if err := internal.TransferLabel(ctx, pod, node, d.Client); client.IgnoreNotFound(err) != nil {
