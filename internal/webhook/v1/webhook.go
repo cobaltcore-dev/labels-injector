@@ -27,6 +27,8 @@ import (
 	logger "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
+
+	"github.com/cobaltcore-dev/labels-injector/internal"
 )
 
 // SetupLabelsInjectorWithManager registers the webhook for Pod/bindings in the manager.
@@ -82,44 +84,19 @@ func (d *PodLabelTransferHandler) Handle(ctx context.Context, request admission.
 
 	// fetch node object
 	node := &v1.Node{}
-	if err := d.Get(ctx, client.ObjectKey{Name: nodeName}, node); err != nil {
+	if err := d.Get(ctx, client.ObjectKey{Name: nodeName}, node); client.IgnoreNotFound(err) != nil {
 		log.Error(err, "failed to fetch node", "name", nodeName)
 		return admission.Allowed("").WithWarnings("Failed to fetch node")
 	}
 
 	// fetch the pod object
 	pod := &v1.Pod{}
-	if err := d.Get(ctx, client.ObjectKeyFromObject(binding), pod); err != nil {
+	if err := d.Get(ctx, client.ObjectKeyFromObject(binding), pod); client.IgnoreNotFound(err) != nil {
 		log.Error(err, "failed to fetch pod", "object", client.ObjectKeyFromObject(binding))
 		return admission.Allowed("").WithWarnings("Failed to fetch pod")
 	}
 
-	var transferLabels = []string{
-		"kubernetes.metal.cloud.sap/name",
-		"kubernetes.metal.cloud.sap/cluster",
-		"kubernetes.metal.cloud.sap/bb",
-		"topology.kubernetes.io/region",
-		"topology.kubernetes.io/zone",
-	}
-
-	if pod.Labels == nil {
-		pod.Labels = make(map[string]string)
-	}
-
-	patch := client.MergeFrom(pod.DeepCopy())
-	// transfer the labels from the node to the pod
-	for _, label := range transferLabels {
-		if nodeLabel, ok := node.Labels[label]; ok {
-			pod.Labels[label] = nodeLabel
-		}
-	}
-	if _, ok := node.Labels["kubernetes.metal.cloud.sap/name"]; !ok {
-		// legacy cluster fallback strategy
-		pod.Labels["kubernetes.metal.cloud.sap/name"] = nodeName
-	}
-
-	// patch the pod object
-	if err := d.Patch(ctx, pod, patch); err != nil {
+	if err := internal.TransferLabel(ctx, pod, node, d.Client); client.IgnoreNotFound(err) != nil {
 		log.Error(err, "Failed to patch pod", "object", client.ObjectKeyFromObject(pod))
 	}
 
