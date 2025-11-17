@@ -1,0 +1,27 @@
+apiVersion: greenhouse.sap/v1alpha1
+kind: PluginPreset
+metadata:
+  labels:
+    greenhouse.sap/owned-by: "compute"
+    greenhouse.sap/deployment-tool: "flux"
+  annotations:
+    greenhouse.sap/propagate-labels: "greenhouse.sap/owned-by,greenhouse.sap/deployment-tool"
+  name: labels-injector
+  namespace: {{ .Release.Namespace }}
+spec:
+  description: "Injects predefined labels to pods by transporting them from nodes."
+  displayName: Labels Injector
+  docMarkDownUrl: https://raw.githubusercontent.com/cobaltcore-dev/labels-injector/refs/heads/main/README.md
+  helmChart:
+    name: labels-injector
+    repository: oci://keppel.eu-de-1.cloud.sap/ccloud-helm
+    version: 0.1.0
+  clusterSelector:
+    matchExpressions:
+      - key: cluster-type
+        operator: In
+        values:
+          - sci-k8s-kvm
+  plugin:
+    pluginDefinition: labels-injector
+    releaseNamespace: labels-injector
