@@ -19,7 +19,6 @@ golangciLint:
 githubWorkflow:
   ci:
     enabled: true
-    coveralls: false
     prepareMakeTarget: generate
   global:
     defaultBranch: main
