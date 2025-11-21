@@ -5,7 +5,7 @@ go 1.25
 godebug default=go1.23
 
 require (
-	github.com/sapcc/go-api-declarations v1.17.3
+	github.com/sapcc/go-api-declarations v1.17.4
 	k8s.io/api v0.32.0
 	k8s.io/apimachinery v0.32.0
 	k8s.io/client-go v0.32.0
