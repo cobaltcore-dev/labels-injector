@@ -1,6 +1,9 @@
-# KVM labels-injector
+<!--
+SPDX-FileCopyrightText: Copyright 2025 SAP SE or an SAP affiliate company and cobaltcore-dev contributors
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+SPDX-License-Identifier: Apache-2.0
+-->
+# labels-injector [![REUSE status](https://api.reuse.software/badge/github.com/cobaltcore-dev/labels-injector)](https://api.reuse.software/info/github.com/cobaltcore-dev/labels-injector) [![Checks](https://github.com/cobaltcore-dev/labels-injector/actions/workflows/checks.yaml/badge.svg)](https://github.com/cobaltcore-dev/labels-injector/actions/workflows/checks.yaml) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ## Description
 
@@ -177,4 +180,7 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+
+Please see our [LICENSE](LICENSE) for copyright and license information.
+Detailed information including third-party components and their licensing/copyright information is available [via the REUSE tool](https://api.reuse.software/info/github.com/cobaltcore-dev/kvm-node-agent).
 
