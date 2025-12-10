@@ -30,7 +30,6 @@ path = [
   "config/**.yaml",
   "charts/**",
   "PROJECT",
-  "README.md",
   "build/**",
 ]
 SPDX-FileCopyrightText = "SAP SE or an SAP affiliate company"
