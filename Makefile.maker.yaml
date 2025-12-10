@@ -22,9 +22,26 @@ githubWorkflow:
     prepareMakeTarget: generate
   global:
     defaultBranch: main
+  securityChecks:
+    enabled: true
+    queries: security-extended
+  pushContainerToGhcr:
+    enabled: true
+    platforms: "linux/amd64,linux/arm64"
+    tagStrategy:
+      - edge
+      - latest
+      - semver
+  license:
+    enabled: true
 
 renovate:
   enabled: true
+  assignees:
+    - notandy
+    - fwiesel
+    - mchristianl
+    - toanju
 
 reuse:
   enabled: true

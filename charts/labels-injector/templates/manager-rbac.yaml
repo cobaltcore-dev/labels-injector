@@ -35,5 +35,5 @@ roleRef:
   name: '{{ include "labels-injector.fullname" . }}-manager-role'
 subjects:
 - kind: ServiceAccount
-  name: '{{ include "labels-injector.fullname" . }}-controller-manager'
+  name: '{{ include "labels-injector.serviceAccountName" . }}'
   namespace: '{{ .Release.Namespace }}'
