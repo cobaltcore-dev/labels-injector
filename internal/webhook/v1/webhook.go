@@ -57,7 +57,7 @@ type PodLabelTransferHandler struct {
 func (d *PodLabelTransferHandler) Handle(ctx context.Context, request admission.Request) admission.Response {
 	log := logger.FromContext(ctx).WithName("label-injector")
 
-	log.Info("Handling request", "reqest", request.Name)
+	log.Info("Handling request", "request", request.Name)
 
 	// check if the request is for a binding
 	if request.Kind.Kind != "Binding" {
