@@ -7,7 +7,6 @@ metadata:
 spec:
   type: {{ .Values.webhookService.type }}
   selector:
-    app.kubernetes.io/name: labels-injector
     control-plane: controller-manager
     {{- include "labels-injector.selectorLabels" . | nindent 4 }}
   ports:
