@@ -54,9 +54,12 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 Create the name of the service account to use
 */}}
 {{- define "labels-injector.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create }}
-{{- default (include "labels-injector.fullname" .) .Values.serviceAccount.name }}
+{{- $default := (include "labels-injector.fullname" .) }}
+{{- with .Values.serviceAccount }}
+{{- if .create }}
+{{- default $default .name }}
 {{- else }}
-{{- default "default" .Values.serviceAccount.name }}
+{{- default "default" .name }}
+{{- end }}
 {{- end }}
 {{- end }}
