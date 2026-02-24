@@ -9,6 +9,8 @@ name: Publish Helm Chart GHCR
     paths:
       - 'charts/**'
   workflow_dispatch: {}
+  release:
+    types: [published]
 
 
 jobs:
@@ -24,6 +26,21 @@ jobs:
 
       - name: Install Helm
         uses: azure/setup-helm@v4.3.1
+
+      - name: Install Kustomize
+        if: github.event_name == 'release' && github.event.release.prerelease == false
+        uses: kustomize-everything/action-kustomize@v1
+
+      - name: Update image tag in kustomization.yaml
+        if: github.event_name == 'release' && github.event.release.prerelease == false
+        run: |
+          kustomize edit set image controller=ghcr.io/cobaltcore-dev/labels-injector:${{ github.event.release.name }}
+        working-directory: config/manager
+
+      - name: Helmify
+        if: github.event_name == 'release' && github.event.release.prerelease == false
+        run: |
+          make helm-chart
 
       - name: Bump Helm Chart
         uses: pluralsh/chart-releaser@v0.1.3
