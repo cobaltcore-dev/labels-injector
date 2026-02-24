@@ -1,0 +1,31 @@
+name: Bump version on release
+on:
+  release:
+    types: [ published ]
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install Kustomize
+        uses: kustomize-everything/action-kustomize@v1
+
+      - name: Update image tag in kustomization.yaml
+        run: |
+          kustomize edit set image controller=ghcr.io/cobaltcore-dev/labels-injector:${{ github.event.release.name }}
+        working-directory: config/manager
+
+      - name: Helmify
+        run: |
+          make helm-charts
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Bump version to ${{ github.event.release.name }}"
+          git push

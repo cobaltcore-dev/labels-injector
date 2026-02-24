@@ -11,6 +11,10 @@ name: Container Registry GHCR
   push:
     branches:
       - main
+    paths:
+      - 'internal/**'
+      - 'cmd/**'
+      - 'Dockerfile'
   workflow_dispatch: {}
 permissions:
   contents: read
