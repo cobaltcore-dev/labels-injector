@@ -19,6 +19,8 @@ package controller
 
 import (
 	"context"
+	"math/rand"
+	"time"
 
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -60,8 +62,8 @@ func (r *PodReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	log := logger.FromContext(context.Background(), "controller", "pod")
 	log.Info("Setting up Pod controller with manager")
 
-	err := mgr.Add(manager.RunnableFunc(func(context.Context) error {
-		return r.ReconcileAllPods()
+	err := mgr.Add(manager.RunnableFunc(func(ctx context.Context) error {
+		return r.ReconcileAllPods(ctx)
 	}))
 	if err != nil {
 		log.Error(err, "unable add a runnable to the manager")
@@ -70,23 +72,42 @@ func (r *PodReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return err
 }
 
-func (r *PodReconciler) ReconcileAllPods() error {
-	log := logger.FromContext(context.Background(), "controller", "pod").WithName("ReconcileAllPods")
+func (r *PodReconciler) ReconcileAllPods(ctx context.Context) error {
+	log := logger.FromContext(ctx, "controller", "pod").WithName("ReconcileAllPods")
 
-	log.Info("Reconciling all Pods")
+	// Base interval of 5 minutes
+	baseInterval := 5 * time.Minute
+	// Random skew up to 1 minute (±30 seconds)
+	maxSkew := 60 * time.Second
 
-	// List all Pods in the cluster
-	podList := &v1.PodList{}
-	if err := r.List(context.Background(), podList); err != nil {
-		return err
-	}
+	for {
+		log.Info("Reconciling all Pods")
 
-	for _, pod := range podList.Items {
-		if _, err := r.Reconcile(context.Background(), ctrl.Request{NamespacedName: client.ObjectKeyFromObject(&pod)}); err != nil {
-			log.Error(err, "Failed to reconcile Pod", "pod", pod.Name)
-			return err
+		// List all Pods in the cluster
+		podList := &v1.PodList{}
+		if err := r.List(ctx, podList); err != nil {
+			log.Error(err, "Failed to list Pods")
+			// Continue on error, will retry on next iteration
+		} else {
+			for _, pod := range podList.Items {
+				if _, err := r.Reconcile(ctx, ctrl.Request{NamespacedName: client.ObjectKeyFromObject(&pod)}); err != nil {
+					log.Error(err, "Failed to reconcile Pod", "pod", pod.Name)
+					// Continue reconciling other pods even if one fails
+				}
+			}
+		}
+
+		// Calculate next interval with random skew
+		skew := time.Duration(rand.Int63n(int64(maxSkew))) - maxSkew/2 //nolint:gosec
+		nextInterval := baseInterval + skew
+		log.Info("Next reconciliation scheduled", "interval", nextInterval)
+
+		select {
+		case <-time.After(nextInterval):
+			// Continue to next iteration
+		case <-ctx.Done():
+			log.Info("Stopping ReconcileAllPods loop")
+			return ctx.Err()
 		}
 	}
-
-	return nil
 }
