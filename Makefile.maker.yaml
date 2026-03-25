@@ -65,11 +65,3 @@ controllerGen:
   crdOutputPath: config/crd/bases
   objectHeaderFile: hack/boilerplate.go.txt
   rbacRoleName: manager-role
-
-verbatim: |
-  install-helmify: FORCE
-    @if ! hash helmify 2>/dev/null; then printf "\e[1;36m>> Installing helmify (this may take a while)...\e[0m\n"; go install github.com/arttor/helmify/cmd/helmify@latest; fi
-
-  helm-charts: install-helmify
-    @printf "\e[1;36m>> helmify\e[0m\n"
-    @kubectl kustomize config/default | helmify -crd-dir charts/labels-injector
