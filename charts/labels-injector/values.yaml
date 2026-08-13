@@ -12,7 +12,7 @@ controllerManager:
         - ALL
     image:
       repository: ghcr.io/cobaltcore-dev/labels-injector
-      tag: latest
+      tag: latest@sha256:2dcc3491d86ab16a0fbdf9f1d8099a6955a5b34a439ca3b8c8ed6929be986e96
     resources:
       limits:
         cpu: 500m
