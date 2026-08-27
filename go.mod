@@ -1,6 +1,6 @@
 module github.com/cobaltcore-dev/labels-injector
 
-go 1.26.0
+go 1.27
 
 godebug default=go1.23
 
